@@ -5,8 +5,6 @@
 ## Coursera R Programming (rprog-011)
 ## Assignment 3: Hospital Quality
 ## https://github.com/rwgeorge/ProgrammingAssignment3
-## 
-## Description: 
 ###############################################################################
 
 best <- function(state, outcome) {
@@ -18,17 +16,24 @@ best <- function(state, outcome) {
     
     ## Get and order the data.
     data <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
-    byHospital <- data[order(data$Hospital.Name),]
     
     ## Check supplied state.
-    states <- unique(byHospital$State)
-    if (!(state %in% states)) {
+    if (!(state %in% data$State)) {
         stop("Invalid state!")
     }
 
     ## Get state data.
-    stateData <- subset(byHospital, State == state)
-    outcomeData <- paste0("hospital.30.day.death..mortality..rates.from.", gsub(" ", ".", outcome))
+    stateData <- subset(data, State == state)
     
-    
+    ## Get column number.
+    if (outcome == "heart attack")
+        outcomeColumn <- 11
+    else if (outcome == "heart failure")
+        outcomeColumn <- 17
+    else
+        outcomeColumn <- 23    
+
+    outcomeColumnData <- as.numeric(stateData[,outcomeColumn])
+    row <- which.min(outcomeColumnData)
+    stateData$Hospital.Name[row]
 }
